@@ -10,7 +10,6 @@ import java.sql.Types;
 
 public class PostgreSQLEnumType extends EnumType {
 
-  @Override
   public void nullSafeSet(
     PreparedStatement st, Object value, int index, SharedSessionContractImplementor session
   )

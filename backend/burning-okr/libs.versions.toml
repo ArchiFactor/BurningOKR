@@ -1,9 +1,9 @@
 [versions]
-spring-boot = '3.+'
+spring-boot = '3.2.0'
 spring-framework-context = '6.0.10' # TODO (C.K.): check on next version if working again
 spring-framework-context-support = '6.0.10'
-spring-security = '6.+'
-hibernate = '6.+'
+spring-security = '6.2.0'
+hibernate = '6.3.1.Final'
 swagger = '2.9.+'
 lombok-plugin = '6.+'
 jakarta-mail = '2.0.+'
