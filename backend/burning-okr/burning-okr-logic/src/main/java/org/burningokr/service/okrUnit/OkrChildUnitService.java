@@ -49,7 +49,7 @@ public class OkrChildUnitService<T extends OkrChildUnit> {
 
   public Collection<Objective> findObjectivesOfUnit(long unitId) {
     var okrUnit = findById(unitId);
-    return objectiveRepository.findByUnitAndOrderBySequence(okrUnit);
+    return objectiveRepository.findByUnitIdAndOrderBySequence(okrUnit.getId());
   }
 
   @PreAuthorize("@childUnitAuthorizationService.hasManagerPrivilegesForChildUnit(#updatedUnit.getId())")

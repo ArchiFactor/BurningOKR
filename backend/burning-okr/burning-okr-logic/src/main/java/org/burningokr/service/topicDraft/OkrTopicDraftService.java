@@ -54,7 +54,7 @@ public class OkrTopicDraftService {
   }
 
   public Collection<NoteTopicDraft> getAllNotesForTopicDraft(long topicDraftId) {
-    return noteTopicDraftRepository.findNoteTopicDraftsByParentTopicDraft_Id(topicDraftId);
+    return noteTopicDraftRepository.findNoteTopicDraftsByParentTopicDraftId(topicDraftId);
   }
 
   public void deleteTopicDraftById(Long topicDraftId) {

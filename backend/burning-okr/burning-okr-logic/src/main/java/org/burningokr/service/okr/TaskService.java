@@ -58,7 +58,7 @@ public class TaskService {
   }
 
   public Collection<Task> findTasksForKeyResult(KeyResult keyResult) {
-    return this.taskRepository.findByKeyResult(keyResult);
+    return this.taskRepository.findByKeyResultId(keyResult.getId());
   }
 
   public Collection<Task> createTask(Task newTask, Long okrUnitId) {

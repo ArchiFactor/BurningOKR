@@ -8,5 +8,5 @@ import java.util.Collection;
 
 @Repository
 public interface NoteTopicDraftRepository extends ExtendedRepository<NoteTopicDraft, Long> {
-  Collection<NoteTopicDraft> findNoteTopicDraftsByParentTopicDraft_Id(long topicDraftId);
+  Collection<NoteTopicDraft> findNoteTopicDraftsByParentTopicDraftId(long topicDraftId);
 }
