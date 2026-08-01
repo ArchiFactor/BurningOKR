@@ -5,9 +5,10 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.burningokr.model.ServiceFactory;
 import org.burningokr.model.activity.Trackable;
 import org.burningokr.model.okr.Objective;
-
+import org.burningokr.model.okr.ObjectiveService;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -30,11 +31,19 @@ public abstract class OkrUnit implements Trackable<Long> {
   @Size(min = 1)
   protected String label;
 
-  @OneToMany(mappedBy = "parentOkrUnit", cascade = CascadeType.REMOVE)
-  @EqualsAndHashCode.Exclude
+  @Transient
+@EqualsAndHashCode.Exclude
   protected Collection<Objective> objectives = new ArrayList<>();
 
   public boolean hasObjectives() {
-    return !objectives.isEmpty();
+    return !this.getObjectives().isEmpty();
+  }
+
+  public Collection<Objective> getObjectives() {
+	if (objectives.isEmpty() && id != null && ServiceFactory.isContainerAvailable()) {
+		ObjectiveService objectiveService = ServiceFactory.getObjectiveService();
+		objectives.addAll(objectiveService.getObjectivesByParentOkrUnitId(id));
+	}
+	return objectives;
   }
 }

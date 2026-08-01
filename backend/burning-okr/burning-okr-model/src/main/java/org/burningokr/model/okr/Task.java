@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import org.burningokr.model.ServiceFactory;
 import org.burningokr.model.activity.Trackable;
 import org.hibernate.envers.Audited;
 import org.springframework.lang.Nullable;
@@ -52,12 +53,14 @@ public class Task implements Trackable<Long> {
   @JoinColumn(name = "parent_task_board_id")
   private TaskBoard parentTaskBoard;
 
-  @ToString.Exclude
-  @ManyToOne(fetch = FetchType.LAZY)
+  @Transient
+@ToString.Exclude
   @Nullable
-  @JoinColumn(name = "assigned_key_result_id")
   @Audited
   private KeyResult assignedKeyResult;
+
+  @Column(name = "assigned_key_result_id")
+  private Long assignedKeyResultId;
 
   @OneToOne(fetch = FetchType.LAZY)
   @Nullable
@@ -73,7 +76,7 @@ public class Task implements Trackable<Long> {
   }
 
   public boolean hasAssignedKeyResult() {
-    return assignedKeyResult != null;
+    return this.getAssignedKeyResult() != null;
   }
 
   public boolean hasPreviousTask() {
@@ -96,5 +99,21 @@ public class Task implements Trackable<Long> {
     copiedTask.setTaskState(this.getTaskState());
     copiedTask.setPreviousTask(this.getPreviousTask());
     return copiedTask;
+  }
+
+  public KeyResult getAssignedKeyResult() {
+	if (assignedKeyResult == null && assignedKeyResultId != null && ServiceFactory.isContainerAvailable()) {
+		KeyResultService keyResultService = ServiceFactory.getKeyResultService();
+		assignedKeyResult = keyResultService.getKeyResultById(assignedKeyResultId);
+	}
+	return assignedKeyResult;
+  }
+
+  @PrePersist
+  @PreUpdate
+  private void syncUnmappedForeignKeys() {
+	if (this.assignedKeyResult != null) {
+		this.assignedKeyResultId = this.assignedKeyResult.getId();
+	}
   }
 }

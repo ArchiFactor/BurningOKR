@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.burningokr.model.ServiceFactory;
 import org.burningokr.model.okr.NoteTopicDraft;
+import org.burningokr.model.okr.NoteTopicDraftService;
 import org.burningokr.model.okr.OkrTopicDescription;
 import org.burningokr.model.okr.histories.OkrTopicDraftHistory;
 import org.burningokr.model.okrUnits.OkrUnit;
@@ -28,7 +30,15 @@ public class OkrTopicDraft extends OkrTopicDescription {
   @Enumerated(EnumType.STRING)
   private OkrTopicDraftStatusEnum currentStatus;
 
-  @ToString.Exclude
-  @OneToMany(mappedBy = "parentTopicDraft", cascade = CascadeType.REMOVE)
+  @Transient
+@ToString.Exclude
   private Collection<NoteTopicDraft> notes = new ArrayList<>();
+
+  public Collection<NoteTopicDraft> getNotes() {
+	if (notes.isEmpty() && getId() != null && ServiceFactory.isContainerAvailable()) {
+		NoteTopicDraftService noteTopicDraftService = ServiceFactory.getNoteTopicDraftService();
+		notes.addAll(noteTopicDraftService.getNoteTopicDraftsByParentTopicDraftId(getId()));
+	}
+	return notes;
+  }
 }

@@ -2,9 +2,10 @@ package org.burningokr.model.okr;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.burningokr.model.ServiceFactory;
 import org.burningokr.model.activity.Trackable;
 import org.burningokr.model.okrUnits.OkrUnit;
-
+import org.burningokr.model.okrUnits.OkrUnitService;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -17,9 +18,12 @@ public class Objective implements Trackable<Long> {
   @SequenceGenerator(name = "hibernate_sequence_generator", sequenceName = "hibernate_sequence", allocationSize = 1)
   private Long id;
 
-  @ToString.Exclude
-  @ManyToOne(fetch = FetchType.LAZY)
+  @Transient
+@ToString.Exclude
   private OkrUnit parentOkrUnit;
+
+  @Column(name = "parentOkrUnit_id")
+  private Long parentOkrUnitId;
 
   @ToString.Exclude
   @ManyToOne(fetch = FetchType.LAZY)
@@ -99,5 +103,21 @@ public class Objective implements Trackable<Long> {
     copy.setActive(this.isActive());
     copy.setSequence(this.getSequence());
     return copy;
+  }
+
+  public OkrUnit getParentOkrUnit() {
+	if (parentOkrUnit == null && parentOkrUnitId != null && ServiceFactory.isContainerAvailable()) {
+		OkrUnitService okrUnitService = ServiceFactory.getOkrUnitService();
+		parentOkrUnit = okrUnitService.getOkrUnitById(parentOkrUnitId);
+	}
+	return parentOkrUnit;
+  }
+
+  @PrePersist
+  @PreUpdate
+  private void syncUnmappedForeignKeys() {
+	if (this.parentOkrUnit != null) {
+		this.parentOkrUnitId = this.parentOkrUnit.getId();
+	}
   }
 }
